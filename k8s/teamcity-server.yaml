@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teamcity-server
+  labels:
+    app: teamcity-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teamcity-server
+  template:
+    metadata:
+      labels:
+        app: teamcity-server
+    spec:
+      containers:
+      - name: teamcity-server
+        image: jetbrains/teamcity-server:latest
+        ports:
+        - containerPort: 8111
+        volumeMounts:
+        - mountPath: /data/teamcity_server/datadir
+          name: teamcity-data
+      volumes:
+      - name: teamcity-data
+        persistentVolumeClaim:
+          claimName: teamcity-pvc
+---
+#nodeport
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: teamcity-server
+#spec:
+#  type: NodePort
+#  selector:
+#    app: teamcity-server
+#  ports:
+#  - port: 8111
+#    targetPort: 8111
+#   nodePort: 30001
+#
+#Load Balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: teamcity-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: teamcity-server
+  ports:
+  - port: 8111
+    targetPort: 8111
+
