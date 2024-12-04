@@ -17,6 +17,7 @@ This guide will only cover a basic test setup and will not get into the details 
 * Minikube
 * GitHub
 * Kubernetes
+* MetalLB
 * TeamCity
 
 
@@ -40,7 +41,7 @@ alias kubectl="minikube kubectl --"
 ### Minikube debugging Notes
 
 
-In Fedora 38, with the default driver qemu2, [minikube service and tunnel are not supported](https://github.com/kubernetes/minikube/issues/14146).
+In Fedora 38, with the default driver qemu2, [minikube service and tunnel features are not supported](https://github.com/kubernetes/minikube/issues/14146).
 
 
 ```
@@ -82,8 +83,9 @@ spec:
 $ kubectl port-forward svc/teamcity-server 8080:8111
 ```
 
+This will allow TeamCity to be accessed through localhost:8080 url.
 
-With the KVM2 driver, the service and tunnel features are supported, and networking works flawlessly with bridging from localhost to the virtual network. In this documentation, Metallb is used to avoid dependency on Minikube for load balancing.
+With the KVM2 driver, the service and tunnel features are supported, and networking works flawlessly with bridging from localhost to the virtual network. In this documentation, [MetalLB](https://metallb.universe.tf/) is used to avoid dependency on Minikube for load balancing.
 
 
 ## Setup TeamCity Server and Agent
@@ -124,7 +126,7 @@ $ kubectl scale deployment teamcity-agent --replicas=3
 ## Setup PostgreSQL
 
 
-Setup kubernetes native secrets for PostgreSQL. Secrets are base64-encoded and stored securely in etcd. While not fully encrypted by default, it helps to keep passwords from source code.
+Setup kubernetes native secrets for PostgreSQL. Secrets are base64-encoded and stored securely in etcd. While not fully encrypted by default, it helps to keep passwords away from the source code.
 
 Note: A better way would be to use encrypted passwords using Kubernetes or a third-party provider.
 
@@ -138,7 +140,7 @@ $ kubectl create secret generic postgres-secret \
 
 ## Setup Load Balancer
 
-Metal load balancer allows to leverage load balancing capabilities without relying on Minikube. Install the minikube addon and create the configmap.
+MetalLB allows to leverage load balancing capabilities without relying on Minikube. Install the minikube addon and create the configmap.
 
 ```
 # minikube addons enable metallb
@@ -171,10 +173,10 @@ Agents need to be authorized from the list of unauthorized agents.
 
 This will allow the agent to run the jobs.
 
-[agent-auto-auth](https://plugins.jetbrains.com/plugin/14903-agent-auto-auth) plugin can be used to automatically authorize agents.
+Note: [agent-auto-auth](https://plugins.jetbrains.com/plugin/14903-agent-auto-auth) plugin can be used to automatically authorize agents.
 
 
-### Github integration
+### Git repo integration
 
 Create a new [ssh key pair](https://linux.die.net/man/1/ssh-keygen).
 
@@ -190,7 +192,11 @@ Click on "Edit configuration" on the Build.
 
 ![Edit Config](img/edit_config.png)
 
-Build Detect would have already found a Auto-detected custom script.
+# Build test
+
+Build Detect can find possible build steps from the repo. It would found an "Auto-detected Custom script" `hello_world.sh`, which is included in the current repo.
+
+Note: Build steps can also be added manually.
 
 ![Build Detect](img/build_detect.png)
 
