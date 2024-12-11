@@ -8,7 +8,7 @@ A local machine with at least 10GB of RAM, 8 CPUs.
 
 ## Scope
 
-This guide will only cover a basic test setup and will not get into the details of production grade deployment. Some of production grade aspects are mentions in todo list in he end.
+This guide will only cover a basic test setup and will not get into the details of production grade deployment. Some of production grade aspects are mentioned in todo list in the end.
 
 ## Technology used
 * Fedora
@@ -216,28 +216,31 @@ Following are some of the aspects which are not mentioned in this guide, but imp
 1. `RBAC (Role-Based Access Control)`
   * Ensure granular permissions for TeamCity server and agents in Kubernetes.
   * Add roles and role bindings specific to namespaces.
-
 2. `Kubernetes Secrets Encryption, rotation and expiration`
 * Enable encryption at rest for Kubernetes Secrets using encryptionConfig file. 
-* Use tools like Sealed Secrets or External Secrets for dynamic secret management. 
+* Use tools like Sealed Secrets or External Secrets for dynamic secret management.
 * Integrate with secret management solutions like [HashiCorp Vault](https://www.vaultproject.io/) if needed.
-3. `Monitoring`
+3. `Teamcity security recommendations`
+* Tighten the security following [documentation] (https://www.jetbrains.com/help/teamcity/security-notes.html) from Teamcity security team.
+4. `Kubernetes Network security`
+* Enable network policies to restrict communication between pods.
+5. `Security scan for images`
+* Regularly scan images for vulnerabilities using tools like [Trivy](https://github.com/aquasecurity/trivy).
+6. `Monitoring`
 * Integrate monitoring tools for visibility into TeamCity server and agents: Use [Prometheus and Grafana](https://prometheus.io/docs/visualization/grafana/) for metrics (e.g., CPU, memory, and pod health). Use [Fluentd](https://www.fluentd.org/) or [ELK stack](https://www.elastic.co/) for log aggregation.
 * Monitor PostgreSQL using its built-in metrics and exporter.
-4. `Better Build Pipeline`
+7. `Better Build Pipeline`
 * Introduce a CI/CD pipeline with reusable templates and modular build steps.
-* Incorporate linting, security scans, and integration tests as pipeline steps.
-5. `High Availability (HA) Setup`
+* Incorporate linting,and integration tests as pipeline steps.
+8. `High Availability (HA) Setup`
 * Use Kubernetes Horizontal Pod Autoscaler (HPA) for agents.
-6. `Network security`
-* Enable network policies to restrict communication between pods.
-7. `Security scan`
-* Regularly scan images for vulnerabilities using tools like [Trivy](https://github.com/aquasecurity/trivy).
-8. `Scalability Testing`
+9. `Scalability Testing`
 * Test the scalability of agents and the server under high workloads.
-9. `Disaster Recovery`
+10. `Disaster Recovery`
 * Set up regular database backups using tools like [Velero](https://velero.io/) for Kubernetes cluster backups.
 * Test restoration procedures periodically.
-10.  `Cost Optimization`
+11. `Cost Optimization`
 * Optimize resource requests and limits for all pods.
 * Use [kubecost](https://www.kubecost.com/) to analyse and report pod resource usage.
+12. `Pin container versions`
+* Pin the container versions for application to a specific version instead of latest.
